@@ -2,7 +2,7 @@
 import os
 
 import boto3
-import request
+import library.request
 
 from base import BasePlugin
 

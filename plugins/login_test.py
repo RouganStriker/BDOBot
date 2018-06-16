@@ -1,8 +1,7 @@
 # Verify that the login works or not
 import os
 
-import boto3
-import library.request
+import requests
 
 from base import BasePlugin
 
@@ -49,6 +48,6 @@ class LoginCheck(BasePlugin):
             "email": username,
             "password": password
         }
-        response = request.post(LOGIN_URL, data=form_data)
+        response = requests.post(LOGIN_URL, data=form_data)
 
-        parse_response(response)
+        self.parse_response(response)

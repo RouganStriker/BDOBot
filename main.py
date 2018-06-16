@@ -1,9 +1,12 @@
 from plugins.login_test import LoginCheck
 from discord_client import DiscordClient
 
+
 def handle(*args, **kwargs):
     client = DiscordClient()
+    client.initialize()
 
-    LoginCheck(discord_client=client).run()
-
-    client.close()
+    try:
+        LoginCheck(discord_client=client).run()
+    finally:
+        client.close()

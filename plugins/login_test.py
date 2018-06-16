@@ -13,6 +13,7 @@ password = os.environ.get("BDO_PASSWORD", None)
 
 LOGIN_URL = "https://www.blackdesertonline.com/launcher/ll/api/Login.json"
 
+
 class LoginCheck(BasePlugin):
     PLUGIN_TYPE = 'login-check'
     ATTRIBUTE_MAPPING = {

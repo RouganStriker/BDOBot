@@ -76,7 +76,7 @@ class BasePlugin(object):
 
             attr_placeholder = ":value{}".format(len(placeholders))
             placeholders[attr_placeholder] = {attribute_type: value}
-            update_attributes.add("{} = {}".format(attribute, attr_placeholder))
+            update_attributes.append("{} = {}".format(attribute, attr_placeholder))
 
         if not update_attributes:
             return None
@@ -90,4 +90,4 @@ class BasePlugin(object):
 
     def run(self):
         """Entry point for the plugin."""
-        raise NotImplemented()
+        raise NotImplementedError()

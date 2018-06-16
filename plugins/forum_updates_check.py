@@ -3,6 +3,7 @@ import os
 
 import boto3
 import discord
+import requests
 from defusedxml.ElementTree import fromstring
 
 from plugins.base import BasePlugin
@@ -14,7 +15,7 @@ EVENTS_URL = "https://community.blackdesertonline.com/index.php?forums/events.6/
 
 class BaseForumUpdateCheck(BasePlugin):
     FORUM_RSS_URL = None
-    MESSAGE_TITlE = ""
+    MESSAGE_TITLE = ""
     ATTRIBUTE_MAPPING = {
         "lastPublishedDate": str
     }
@@ -33,7 +34,7 @@ class BaseForumUpdateCheck(BasePlugin):
         if not item:
             return None
 
-        return self._parse_date_string(item['Item']['isOnline']['S'])
+        return self._parse_date_string(item['Item']['lastPublishedDate']['S'])
 
     def parse_response(self, response):
         et = fromstring(response.text)
@@ -43,12 +44,12 @@ class BaseForumUpdateCheck(BasePlugin):
 
         for item in et.find('channel').findall('item'):
             # Each item is a forum post
-            pub_date = self._parse_date_string(item.find('pub_date').text)
+            pub_date = self._parse_date_string(item.find('pubDate').text)
 
             if latest_published is None or pub_date > latest_published:
                 latest_published = pub_date
 
-            if pub_date >= last_published:
+            if pub_date > last_published:
                 new_updates.append(item.find('link').text)
             else:
                 # The posts are sorted by date, we can exit early once we hit the old posts
@@ -65,7 +66,7 @@ class BaseForumUpdateCheck(BasePlugin):
 
             # Broadcast all new posts
             for link in new_updates:
-                self.discord.broadcast_message(content="@here {} \n {}".format(self.MESSAGE_TITlE, link))
+                self.discord.broadcast_message(content="@here **{}** \n {}".format(self.MESSAGE_TITLE, link))
 
     def run(self):
         if self.FORUM_RSS_URL is None:
@@ -75,22 +76,22 @@ class BaseForumUpdateCheck(BasePlugin):
         response = requests.get(self.FORUM_RSS_URL)
 
         self.parse_response(response)
-        print("Completed {}".format(PLUGIN_TYPE))
+        print("Completed {}".format(self.PLUGIN_TYPE))
 
 
-class AnnouncementUpdateCheck(BasePlugin):
+class AnnouncementUpdateCheck(BaseForumUpdateCheck):
     PLUGIN_TYPE = 'announcement-check'
     FORUM_RSS_URL = "https://community.blackdesertonline.com/index.php?forums/news-announcements.181/index.rss"
-    MESSAGE_TITLE = "News & Announcements"
+    MESSAGE_TITLE = "New News & Announcements"
 
 
-class PatchNoteUpdateCheck(BasePlugin):
+class PatchNoteUpdateCheck(BaseForumUpdateCheck):
     PLUGIN_TYPE = 'patch-note-check'
     FORUM_RSS_URL = "https://community.blackdesertonline.com/index.php?forums/patch-notes.5/index.rss"
-    MESSAGE_TITLE = "Patch Notes"
+    MESSAGE_TITLE = "New Patch Notes"
 
 
-class EventUpdateCheck(BasePlugin):
+class EventUpdateCheck(BaseForumUpdateCheck):
     PLUGIN_TYPE = 'event-check'
     FORUM_RSS_URL = "https://community.blackdesertonline.com/index.php?forums/events.6/index.rss"
-    MESSAGE_TITLE = "Events"
+    MESSAGE_TITLE = "New Events"

@@ -9,8 +9,9 @@ class BasePlugin(object):
     # Mapping of attribute names to a type
     ATTRIBUTE_MAPPING = {}
 
-    def __init__(self):
+    def __init__(self, discord_client=None):
         self.db = boto3.client('dynamodb')
+        self.discord = discord_client
 
     @property
     def partition_key(self):

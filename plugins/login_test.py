@@ -4,7 +4,6 @@ from base64 import b64decode
 
 import boto3
 import discord
-import requests
 
 from plugins.base import BasePlugin
 
@@ -43,16 +42,17 @@ class LoginCheck(BasePlugin):
         if not item:
             # No previous status
             self.create_item(isOnline=isOnline)
-        elif item['Item']['isOnline'] != isOnline:
+        elif item['Item']['isOnline']['BOOL'] != isOnline:
             # Status changed
             self.update_item()
 
             embed = discord.Embed(
                 title='Login Status',
                 description='The game service is currently {}'.format("ONLINE" if isOnline else "OFFLINE"),
-                colour=0xFF0000 if isOnline else 0x00FF00
+                colour=discord.Color.green() if isOnline else discord.Color.red()
             )
 
+            print("Status changed to {}, broadcasting...".format(isOnline))
             self.discord.broadcast_message(content="@here Status Notification", embed=embed)
 
     def get_creds(self):
@@ -72,7 +72,9 @@ class LoginCheck(BasePlugin):
         return creds
 
     def run(self):
+        print("Performing Login server test...")
         form_data = self.get_creds()
         response = requests.post(LOGIN_URL, data=form_data)
 
         self.parse_response(response)
+        print("Completed Login server test")

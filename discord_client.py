@@ -20,6 +20,8 @@ class DiscordClient(object):
     # Discord Client wrapper
 
     def __init__(self):
+        asyncio.set_event_loop(asyncio.new_event_loop())
+
         if token is None:
             raise Exception("Missing environment variable DISCORD_TOKEN")
 
@@ -59,9 +61,11 @@ class DiscordClient(object):
 
         return channels
 
-    async def broadcast_message(self, content=None, embed=None):
+    def broadcast_message(self, content=None, embed=None):
+        loop = self.client.loop
+
         for channel in self.broadcast_channels:
-            await self.client.send_message(channel, content=content, embed=embed)
+            asyncio.run_coroutine_threadsafe(self.client.send_message(channel, content=content, embed=embed), loop).result()
 
     def close(self):
         print("Terminating Discord Client")

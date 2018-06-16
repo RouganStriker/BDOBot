@@ -4,6 +4,7 @@ from base64 import b64decode
 
 import boto3
 import discord
+import requests
 
 from plugins.base import BasePlugin
 

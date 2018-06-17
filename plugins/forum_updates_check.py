@@ -1,8 +1,5 @@
 import datetime
-import os
 
-import boto3
-import discord
 import requests
 from defusedxml.ElementTree import fromstring
 

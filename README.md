@@ -1,5 +1,5 @@
 # BDO Discord Bot
-A simple Discord Bot to replace some of the lost functionality when the original [BDO Bot](https://github.com/jojothegoat/bdobot) is shutdown.
+A simple Discord Bot to replace some of the lost functionality when the original [BDO Bot](https://www.reddit.com/r/blackdesertonline/comments/8p30ii/bdobot_discord_bot_is_shutting_down/) is shutdown.
 This bot was built with the intention of running in on AWS Lambda. 
 
 You can invite the bot to your server using this [link](https://discordapp.com/api/oauth2/authorize?client_id=457383567048310800&permissions=134144&scope=bot).

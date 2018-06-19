@@ -5,10 +5,6 @@ from defusedxml.ElementTree import fromstring
 
 from plugins.base import BasePlugin
 
-ANNOUNCEMENTS_URL = "https://community.blackdesertonline.com/index.php?forums/news-announcements.181/index.rss"
-PATCH_NOTES_URL = "https://community.blackdesertonline.com/index.php?forums/patch-notes.5/index.rss"
-EVENTS_URL = "https://community.blackdesertonline.com/index.php?forums/events.6/index.rss"
-
 
 class BaseForumUpdateCheck(BasePlugin):
     FORUM_RSS_URL = None

@@ -14,7 +14,8 @@ class BaseForumUpdateCheck(BasePlugin):
     FORUM_RSS_URL = None
     MESSAGE_TITLE = ""
     ATTRIBUTE_MAPPING = {
-        "lastPublishedDate": str
+        "lastPublishedDate": str,
+        "lastPublishedLink": str,
     }
 
     @property
@@ -25,18 +26,22 @@ class BaseForumUpdateCheck(BasePlugin):
         return datetime.datetime.strptime(date, self._date_format)
 
     @property
-    def last_published_date(self):
+    def last_published(self):
         item = self.get_item()
 
         if not item:
             return None
 
-        return self._parse_date_string(item['Item']['lastPublishedDate']['S'])
+        date = self._parse_date_string(item['Item']['lastPublishedDate']['S'])
+        link = item['Item']['lastPublishedLink']['S']
+
+        return date, link
 
     def parse_response(self, response):
         et = fromstring(response.text)
-        last_published = self.last_published_date
+        last_published, last_published_link = self.last_published_date
         latest_published = None
+        latest_published_link = None
         new_updates = []
 
         print("{}: Last forum update was on {}".format(self.PLUGIN_TYPE, last_published))
@@ -44,12 +49,13 @@ class BaseForumUpdateCheck(BasePlugin):
         for item in et.find('channel').findall('item'):
             # Each item is a forum post
             pub_date = self._parse_date_string(item.find('pubDate').text)
+            link = item.find('link').text
 
-            if latest_published is None or pub_date > latest_published:
+            if latest_published is None or (pub_date > latest_published and link != last_published_link):
                 latest_published = pub_date
-
+                latest_published_link = link
             if pub_date > last_published:
-                new_updates.append(item.find('link').text)
+                new_updates.append(link)
             else:
                 # The posts are sorted by date, we can exit early once we hit the old posts
                 break
@@ -59,10 +65,12 @@ class BaseForumUpdateCheck(BasePlugin):
             return
 
         if last_published is None:
-            self.create_item(lastPublishedDate=latest_published.strftime(self._date_format))
+            self.create_item(lastPublishedDate=latest_published.strftime(self._date_format),
+                             lastPublishedLink=latest_published_link)
         elif latest_published > last_published:
             print("{}: Found latest update on {}".format(self.PLUGIN_TYPE, latest_published))
-            self.update_item(lastPublishedDate=latest_published.strftime(self._date_format))
+            self.update_item(lastPublishedDate=latest_published.strftime(self._date_format),
+                             lastPublishedLink=latest_published_link)
 
             # Broadcast all new posts
             for link in new_updates:

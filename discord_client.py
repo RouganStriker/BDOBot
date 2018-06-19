@@ -62,6 +62,8 @@ class DiscordClient(object):
         return channels
 
     def broadcast_message(self, content=None, embed=None):
+        print("Broadcasting message to all clients...")
+
         loop = self.client.loop
 
         for channel in self.broadcast_channels:

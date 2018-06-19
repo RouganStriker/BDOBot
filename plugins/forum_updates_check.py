@@ -39,6 +39,8 @@ class BaseForumUpdateCheck(BasePlugin):
         latest_published = None
         new_updates = []
 
+        print("{}: Last forum update was on {}".format(self.PLUGIN_TYPE, last_published))
+
         for item in et.find('channel').findall('item'):
             # Each item is a forum post
             pub_date = self._parse_date_string(item.find('pubDate').text)
@@ -59,6 +61,7 @@ class BaseForumUpdateCheck(BasePlugin):
         if last_published is None:
             self.create_item(lastPublishedDate=latest_published.strftime(self._date_format))
         elif latest_published > last_published:
+            print("{}: Found latest update on {}".format(self.PLUGIN_TYPE, latest_published))
             self.update_item(lastPublishedDate=latest_published.strftime(self._date_format))
 
             # Broadcast all new posts

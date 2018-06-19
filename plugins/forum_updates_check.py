@@ -35,7 +35,7 @@ class BaseForumUpdateCheck(BasePlugin):
 
     def parse_response(self, response):
         et = fromstring(response.text)
-        last_published, last_published_link = self.last_published_date
+        last_published, last_published_link = self.last_published
         latest_published = None
         latest_published_link = None
         new_updates = []

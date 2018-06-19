@@ -20,7 +20,7 @@ class PatchUpdateCheck(BasePlugin):
         if not item:
             return None
 
-        return item['Item']['lastPatchVersion']['N']
+        return int(item['Item']['lastPatchVersion']['N'])
 
     def parse_response(self, response):
         try:

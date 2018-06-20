@@ -58,12 +58,13 @@ class BaseForumUpdateCheck(BasePlugin):
             pub_date = self._parse_date_string(item.find('pubDate').text)
             link = item.find('link').text
 
-            if latest_published is None or (pub_date > latest_published and self.is_link_newer(latest_published_link, link)):
+            if latest_published is None or self.is_link_newer(latest_published_link, link):
                 latest_published = pub_date
                 latest_published_link = link
-            if pub_date > last_published and self.is_link_newer(last_published_link, link):
+
+            if self.is_link_newer(last_published_link, link):
                 new_updates.append(link)
-            else:
+            elif pub_date < last_published:
                 # The posts are sorted by date, we can exit early once we hit the old posts
                 break
 

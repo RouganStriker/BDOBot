@@ -19,6 +19,7 @@ The bot requires the following environment variables to run
 * ENVIRONMENT - Specify **AWS** if the bot is running on AWS with encrypted environment variables for the username and password
 
 ## Caveats
+* The BDO account used for login checks must be an active **NA** account with two-factor authentication disabled
 * The bot will only post notifications to a channel named #announcements
 * There are no commands available
 * Because the bot runs on AWS lambda, it will only appear online when it checks for updates

@@ -1,4 +1,5 @@
 import datetime
+import re
 
 import requests
 from defusedxml.ElementTree import fromstring
@@ -33,6 +34,16 @@ class BaseForumUpdateCheck(BasePlugin):
 
         return date, link
 
+    def is_link_newer(self, old_link, new_link):
+        if old_link == new_link:
+            return True
+
+        # Check the unique ID at the end of the URL
+        old_version = re.search('\.(/d+)/?$', old_link).groups()[0]
+        new_version = re.search('\.(/d+)/?$', new_link).groups()[0]
+
+        return int(old_version) < int(new_version)
+
     def parse_response(self, response):
         et = fromstring(response.text)
         last_published, last_published_link = self.last_published
@@ -47,10 +58,10 @@ class BaseForumUpdateCheck(BasePlugin):
             pub_date = self._parse_date_string(item.find('pubDate').text)
             link = item.find('link').text
 
-            if latest_published is None or (pub_date > latest_published and link != last_published_link):
+            if latest_published is None or (pub_date > latest_published and self.is_link_newer(latest_published_link, link)):
                 latest_published = pub_date
                 latest_published_link = link
-            if pub_date > last_published and link != last_published_link:
+            if pub_date > last_published and self.is_link_newer(last_published_link, link):
                 new_updates.append(link)
             else:
                 # The posts are sorted by date, we can exit early once we hit the old posts

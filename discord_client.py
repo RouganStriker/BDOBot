@@ -67,7 +67,11 @@ class DiscordClient(object):
         loop = self.client.loop
 
         for channel in self.broadcast_channels:
-            asyncio.run_coroutine_threadsafe(self.client.send_message(channel, content=content, embed=embed), loop).result()
+            try:
+                asyncio.run_coroutine_threadsafe(self.client.send_message(channel, content=content, embed=embed), loop).result()
+            except Exception as e:
+                print("Failed to broadcast to {}. Reason: {}".format(channel.server, e))
+                continue
 
     def close(self):
         print("Terminating Discord Client")

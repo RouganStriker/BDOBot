@@ -36,13 +36,15 @@ class PatchUpdateCheck(BasePlugin):
             self.update_item(lastPatchVersion=version)
 
             # Broadcast patch update
+            print("Found new version {}".format(version))
+
             embed = discord.Embed(
-                title='New Patch Notification',
+                title='New Game Patch',
                 description='v{}'.format(version),
                 colour=discord.Color.blue()
             )
 
-            self.discord.broadcast_message(content="@here Update Notification", embed=embed)
+            self.discord.broadcast_message(content="@here **Update Notification**", embed=embed)
 
     def run(self):
         print("Running {}...".format(self.PLUGIN_TYPE))

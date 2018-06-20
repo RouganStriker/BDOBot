@@ -12,6 +12,7 @@ username = os.environ.get("BDO_USERNAME", None)
 password = os.environ.get("BDO_PASSWORD", None)
 
 LOGIN_URL = "https://www.blackdesertonline.com/launcher/ll/api/Login.json"
+PLAY_TOKEN_URL = "https://blackdesertonline.com/launcher/l/api/CreatePlayToken.json"
 
 
 class LoginCheck(BasePlugin):
@@ -45,7 +46,7 @@ class LoginCheck(BasePlugin):
             self.create_item(isOnline=isOnline)
         elif item['Item']['isOnline']['BOOL'] != isOnline:
             # Status changed
-            self.update_item()
+            self.update_item(isOnline=isOnline)
 
             embed = discord.Embed(
                 title='Login Status',
@@ -54,7 +55,7 @@ class LoginCheck(BasePlugin):
             )
 
             print("Status changed to {}, broadcasting...".format(isOnline))
-            self.discord.broadcast_message(content="@here Status Notification", embed=embed)
+            self.discord.broadcast_message(content="@here **Status Notification**", embed=embed)
 
     def get_creds(self):
         environment = os.environ.get("ENVIRONMENT", None)
@@ -77,5 +78,17 @@ class LoginCheck(BasePlugin):
         form_data = self.get_creds()
         response = requests.post(LOGIN_URL, data=form_data)
 
-        self.parse_response(response)
+        # Grab token from login response
+        play_token = response.json().get('result', {}).get('token')
+
+        if play_token is not None:
+            response = requests.post(PLAY_TOKEN_URL, data={
+                "token": play_token,
+                "lang": "EN",
+                "region": "NA"
+            })
+
+            # Check play token creation
+            self.parse_response(response)
+
         print("Completed Login server test")

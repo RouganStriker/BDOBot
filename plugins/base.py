@@ -34,7 +34,7 @@ class BasePlugin(object):
     def _python_type_to_dynamo_type(self, attribute_class):
         if issubclass(attribute_class, str):
             return 'S'
-        elif attribute_class in [int, long, float, complex]:
+        elif attribute_class in [int, float]:
             return 'N'
         elif issubclass(attribute_class, list):
             return 'L'
@@ -53,6 +53,10 @@ class BasePlugin(object):
                 continue
 
             attribute_type = self._python_type_to_dynamo_type(self.ATTRIBUTE_MAPPING[attribute])
+            if attribute_type == "N":
+                # Cast number to string
+                value = str(value)
+
             item[attribute] = {
                 attribute_type: value
             }
@@ -73,6 +77,9 @@ class BasePlugin(object):
                 continue
 
             attribute_type = self._python_type_to_dynamo_type(self.ATTRIBUTE_MAPPING[attribute])
+            if attribute_type == "N":
+                # Cast number to string
+                value = str(value)
 
             attr_placeholder = ":value{}".format(len(placeholders))
             placeholders[attr_placeholder] = {attribute_type: value}

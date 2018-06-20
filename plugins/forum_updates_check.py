@@ -64,7 +64,7 @@ class BaseForumUpdateCheck(BasePlugin):
 
             if self.is_link_newer(last_published_link, link):
                 new_updates.append(link)
-            elif pub_date < last_published:
+            elif pub_date <= last_published:
                 # The posts are sorted by date, we can exit early once we hit the old posts
                 break
 

@@ -39,8 +39,8 @@ class BaseForumUpdateCheck(BasePlugin):
             return True
 
         # Check the unique ID at the end of the URL
-        old_version = re.search('\.(/d+)/?$', old_link).groups()[0]
-        new_version = re.search('\.(/d+)/?$', new_link).groups()[0]
+        old_version = re.search('\.(\d+)/?$', old_link).groups()[0]
+        new_version = re.search('\.(\d+)/?$', new_link).groups()[0]
 
         return int(old_version) < int(new_version)
 

@@ -36,7 +36,7 @@ class BaseForumUpdateCheck(BasePlugin):
 
     def is_link_newer(self, old_link, new_link):
         if old_link == new_link:
-            return True
+            return False
 
         # Check the unique ID at the end of the URL
         old_version = re.search('\.(\d+)/?$', old_link).groups()[0]

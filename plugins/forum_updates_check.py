@@ -75,7 +75,7 @@ class BaseForumUpdateCheck(BasePlugin):
         if last_published is None:
             self.create_item(lastPublishedDate=latest_published.strftime(self._date_format),
                              lastPublishedLink=latest_published_link)
-        elif latest_published > last_published and latest_published_link != last_published_link:
+        elif latest_published > last_published and self.is_link_newer(last_published_link, latest_published_link):
             print("{}: Found latest update on {}".format(self.PLUGIN_TYPE, latest_published))
             self.update_item(lastPublishedDate=latest_published.strftime(self._date_format),
                              lastPublishedLink=latest_published_link)
